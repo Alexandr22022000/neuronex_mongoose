@@ -1,5 +1,6 @@
 const session = require('express-session'),
-    mongoConnect = require('connect-mongo');
+    mongoConnect = require('connect-mongo'),
+    mongoose = require('mongoose');
 
 const config = { //FIXME check settings
     sessionOptions: {
@@ -14,7 +15,7 @@ const config = { //FIXME check settings
     },
 };
 
-module.exports = (app, mongoose, DATABASE_URL, consoleLog, CONFIG) => {
+const smartConnect = (app, DATABASE_URL, consoleLog, CONFIG) => {
     if (!CONFIG) CONFIG = config;
 
     let dbName = DATABASE_URL.slice(DATABASE_URL.lastIndexOf('/') + 1); //FIXME add regexp
@@ -32,3 +33,7 @@ module.exports = (app, mongoose, DATABASE_URL, consoleLog, CONFIG) => {
     mongoose.connection.on('error', () => {if (consoleLog) consoleLog('Connection to database error')});
     mongoose.connection.once('open', () => {if (consoleLog) consoleLog('Connection to database is successful')});
 };
+
+mongoose.smartConnect = smartConnect;
+
+module.exports = mongoose;
